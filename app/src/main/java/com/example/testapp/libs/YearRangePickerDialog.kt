@@ -3,11 +3,11 @@ package com.lds.cinema.ui.screen.filter
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -20,18 +20,17 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.snapshotFlow
+import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
-import kotlinx.coroutines.flow.merge
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.collect
+import com.ozcanalasalvar.wheelview.WheelView
 
 // Константы для специальных значений в пикерах
 private const val FROM_ALL_VALUE = "с"  // Значение для "от начала" (без нижней границы)
@@ -70,8 +69,10 @@ fun YearRangePickerDialog(
 
     // Установка начальных значений пикеров
     LaunchedEffect(Unit) {
-        fromYearPickerState.value = PickerState(items = fromYearsList, _realItemPosition = adjustedFromYearIndex)
-        toYearPickerState.value = PickerState(items = toYearsList, _realItemPosition = adjustedToYearIndex)
+        fromYearPickerState.value =
+            PickerState(items = fromYearsList, _realItemPosition = adjustedFromYearIndex)
+        toYearPickerState.value =
+            PickerState(items = toYearsList, _realItemPosition = adjustedToYearIndex)
     }
 
     // Отслеживаем изменения выбора в первом пикере и обновляем второй
@@ -171,101 +172,15 @@ fun YearRangePickerDialog(
                     Box(
                         modifier = Modifier
                             .weight(1f)
-                            .fillMaxHeight()
-                    ) {
-                        // Градиент затемнения сверху
-                        Box(
-                            modifier = Modifier
-                                .align(Alignment.TopCenter)
-                                .fillMaxWidth()
-                                .height(40.dp)
-                                .background(
-                                    brush = Brush.verticalGradient(
-                                        colors = listOf(
-                                            MaterialTheme.colorScheme.surface,
-                                            MaterialTheme.colorScheme.surface.copy(alpha = 0f)
-                                        )
-                                    )
-                                )
-                                .zIndex(1f)
-                        )
-
-                        Picker(
-                            state = fromYearPickerState,
-
-                            modifier = Modifier.fillMaxSize(),
-                            textModifier = Modifier.padding(8.dp),
-                            textStyle = TextStyle(fontSize = 32.sp),
-                            startIndex = adjustedFromYearIndex
-                        )
-
-                        // Градиент затемнения снизу
-                        Box(
-                            modifier = Modifier
-                                .align(Alignment.BottomCenter)
-                                .fillMaxWidth()
-                                .height(40.dp)
-                                .background(
-                                    brush = Brush.verticalGradient(
-                                        colors = listOf(
-                                            MaterialTheme.colorScheme.surface.copy(alpha = 0f),
-                                            MaterialTheme.colorScheme.surface
-                                        )
-                                    )
-                                )
-                                .zIndex(1f)
-                        )
-                    }
-
+                            .fillMaxHeight(), content = Body(fromYearPickerState)
+                    )
                     // Барабан для выбора года "до"
                     Box(
                         modifier = Modifier
                             .weight(1f)
-                            .fillMaxHeight()
-                    ) {
-                        // Градиент затемнения сверху
-                        Box(
-                            modifier = Modifier
-                                .align(Alignment.TopCenter)
-                                .fillMaxWidth()
-                                .height(40.dp)
-                                .background(
-                                    brush = Brush.verticalGradient(
-                                        colors = listOf(
-                                            MaterialTheme.colorScheme.surface,
-                                            MaterialTheme.colorScheme.surface.copy(alpha = 0f)
-                                        )
-                                    )
-                                )
-                                .zIndex(1f)
-                        )
-
-                        Picker(
-                            state = toYearPickerState,
-
-                            modifier = Modifier.fillMaxSize(),
-                            textModifier = Modifier.padding(8.dp),
-                            textStyle = TextStyle(fontSize = 32.sp),
-                            startIndex = adjustedToYearIndex
-                        )
-
-                        // Градиент затемнения снизу
-                        Box(
-                            modifier = Modifier
-                                .align(Alignment.BottomCenter)
-                                .fillMaxWidth()
-                                .height(40.dp)
-                                .background(
-                                    brush = Brush.verticalGradient(
-                                        colors = listOf(
-                                            MaterialTheme.colorScheme.surface.copy(alpha = 0f),
-                                            MaterialTheme.colorScheme.surface
-                                        )
-                                    )
-                                )
-                                .zIndex(1f)
-                        )
-                    }
+                            .fillMaxHeight(),
+                        content = Body(toYearPickerState)
+                    )
                 }
             }
         },
@@ -296,6 +211,113 @@ fun YearRangePickerDialog(
         }
     )
 }
+
+@Composable
+private fun Body(state: MutableState<PickerState>): @Composable() (BoxScope.() -> Unit) =
+    {
+
+
+        // Градиент затемнения сверху
+        Box(
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .fillMaxWidth()
+                .height(40.dp)
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            MaterialTheme.colorScheme.surface,
+                            MaterialTheme.colorScheme.surface.copy(alpha = 0f)
+                        )
+                    )
+                )
+                .zIndex(1f)
+        )
+
+        WheelView(
+            modifier = Modifier,
+            itemSize = DpSize(150.dp, 25.dp),
+            selection = 0,
+            isEndless = state.value.items.size >= 4,
+            itemCount = state.value.items.size,
+            rowOffset = 2,
+            onFocusItem = { item ->
+                state.value = state.value.copy(_realItemPosition = item)
+                state.value.selectedItem = state.value.items[item]
+
+
+//                                fromYearPickerState.value = fromYearPickerState.value.copy(_realItemPosition = it).also {
+//                                    it.realItemPosition = it._realItemPosition // вызовет сеттер и обновит selectedItem
+//                                }
+
+//                                fromYearPickerState.value = fromYearPickerState.value.copy(_realItemPosition = item).also {
+//                                    it.selectedItem = fromYearPickerState.value.items.getOrNull(item) ?: ""
+//                                }
+            },
+            content = {
+                // Text(
+                //     text = availableYears[it].toString(),
+                //     textAlign = TextAlign.Start,
+                //     fontSize = 17.sp,
+                //     color = Color.Black
+                // )
+
+                Text(
+                    text = state.value.getLabel(it),
+                    maxLines = 1, textAlign = TextAlign.Start,
+                    //overflow = TextOverflow.Ellipsis,
+                    //style = textStyle,
+                    style = MaterialTheme.typography.labelLarge,
+                    modifier = Modifier.onSizeChanged {/* size -> itemHeightPixels.value = size.height*/ }
+                )
+            })
+
+        // Градиент затемнения снизу
+        Box(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .fillMaxWidth()
+                .height(40.dp)
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            MaterialTheme.colorScheme.surface.copy(alpha = 0f),
+                            MaterialTheme.colorScheme.surface
+                        )
+                    )
+                )
+                .zIndex(1f)
+        ) {
+            Button(onClick = {
+                state.value = state.value.copy(selectedItem = "@@@@@")
+
+            }) {
+                Text(text = "Button")
+            }
+        }
+
+//                        WheelView(
+//                            modifier = Modifier.fillMaxSize(),
+////                            itemSize = DpSize(/*width*/, /*height*/),
+//                            selection = 0,
+//                            itemCount = 100,
+////                            isEndless = /*isEndless*/,
+////                            selectorOption = SelectorOptions(),
+//                            rowOffset = 3,
+//                            onFocusItem = { index ->
+//                                println("@@@@ $index")
+//                            },
+//                            content = {
+
+//                            })
+
+//                        WheelView(
+//                            state = fromYearPickerState,
+//                            textModifier = Modifier.padding(8.dp),
+//                            textStyle = TextStyle(fontSize = 32.sp),
+//                            startIndex = adjustedFromYearIndex
+//                        )
+    }
 
 @Preview
 @Composable

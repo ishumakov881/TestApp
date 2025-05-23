@@ -40,6 +40,8 @@ android {
 }
 
 dependencies {
+    implementation("com.github.ozcanalasalvar.picker:wheelview:2.0.7")
+    implementation("com.github.ozcanalasalvar.picker:datepicker:2.0.7")
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

@@ -11,6 +11,7 @@ fun rememberPickerState(): MutableState<PickerState> = remember { mutableStateOf
 data class PickerState(
     val items: List<String> = emptyList(),
     val _realItemPosition: Int = 0,
+    var selectedItem: String = "" //get() = items.getOrNull(realItemPosition) ?: ""
 ) {
     var virtualItemPosition: Int = 0
 
@@ -20,8 +21,7 @@ data class PickerState(
             selectedItem = items.getOrNull(field) ?: ""
         }
 
-    var selectedItem: String = ""
-        get() = items.getOrNull(realItemPosition) ?: ""
+
 
     fun prettyPrint(): String {
         return if (items.isEmpty()) {
@@ -35,14 +35,20 @@ data class PickerState(
         return if (items.isEmpty()) 0 else virtualItemPosition % items.size
     }
 
-    fun getItem(index: Int): String {
-        return if (items.isEmpty()) "" else items[index % items.size]
-    }
+//    fun getItem(index: Int): String {
+//        return if (items.isEmpty()) "" else items[index % items.size]
+//    }
+//
+//    fun getLabel(index: Int): String {
+//        if (items.isEmpty()) return ""
+//        val realIndex = index % items.size
+//        return if (items.isEmpty()) "" else items[index % items.size]
+//        //return "${items[realIndex]} | $realIndex | $index"
+//    }
 
     fun getLabel(index: Int): String {
         if (items.isEmpty()) return ""
-        val realIndex = index % items.size
-        return if (items.isEmpty()) "" else items[index % items.size]
+        return if (items.isEmpty()) "" else items[index]
         //return "${items[realIndex]} | $realIndex | $index"
     }
 }
