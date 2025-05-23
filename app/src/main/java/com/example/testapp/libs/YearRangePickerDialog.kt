@@ -69,26 +69,44 @@ fun YearRangePickerDialog(
 
     // Установка начальных значений пикеров
     LaunchedEffect(Unit) {
-        fromYearPickerState.value =
-            PickerState(items = fromYearsList, _realItemPosition = adjustedFromYearIndex)
-        toYearPickerState.value =
-            PickerState(items = toYearsList, _realItemPosition = adjustedToYearIndex)
+        fromYearPickerState.value = PickerState(items = fromYearsList, realItemPosition = adjustedFromYearIndex)
+        toYearPickerState.value = PickerState(items = toYearsList, realItemPosition = adjustedToYearIndex)
+    }
+
+    fun PickerState.withItemsPreservingSelection(newItems: List<String>): PickerState {
+        val newIndex = newItems.indexOf(selectedItem).takeIf { it >= 0 } ?: 0
+        return PickerState(items = newItems, realItemPosition = newIndex)
     }
 
     // Отслеживаем изменения выбора в первом пикере и обновляем второй
     LaunchedEffect(fromYearPickerState.value.selectedItem) {
         val selectedItem = fromYearPickerState.value.selectedItem
-        if (selectedItem == FROM_ALL_VALUE) {
+        toYearPickerState.value = if (selectedItem == FROM_ALL_VALUE) {
             // Все годы доступны
-            toYearPickerState.value = PickerState(items = toYearsList, _realItemPosition = 2)
-            //@@@ selectedItem = toYearPickerState.value.selectedItem.takeIf { it in toYearsList } ?: toYearsList.first()
+            toYearPickerState.value.withItemsPreservingSelection(toYearsList)
         } else {
-            // Ограничиваем годы в зависимости от выбранного года
             val selectedYear = selectedItem.toIntOrNull() ?: 0
             val filteredYears = availableYears.filter {
-                it.toIntOrNull()?.let { year -> year > selectedYear } ?: false
+                it.toIntOrNull()?.let { year -> year >= selectedYear } ?: false
             } + listOf(TO_ALL_VALUE)
-            toYearPickerState.value = PickerState(items = filteredYears, _realItemPosition = 2)
+
+            toYearPickerState.value.withItemsPreservingSelection(filteredYears)
+        }
+    }
+
+    // Отслеживаем изменения выбора второго пикере и обновляем первый
+    LaunchedEffect(toYearPickerState.value.selectedItem) {
+        val selectedItem = toYearPickerState.value.selectedItem
+        fromYearPickerState.value = if (selectedItem == TO_ALL_VALUE) {
+            // Все годы доступны
+            fromYearPickerState.value.withItemsPreservingSelection(fromYearsList)
+        } else {
+            val selectedYear = selectedItem.toIntOrNull() ?: 0
+            val filteredYears = availableYears.filter {
+                it.toIntOrNull()?.let { year -> year <= selectedYear } ?: false
+            } + listOf(FROM_ALL_VALUE)
+
+            fromYearPickerState.value.withItemsPreservingSelection(filteredYears)
         }
     }
 
@@ -99,15 +117,15 @@ fun YearRangePickerDialog(
 
     // Отслеживаем изменения во втором пикере для отладки
     LaunchedEffect(toYearPickerState.value.selectedItem) {
-        println("[TO] Changed to: ${toYearPickerState.value.selectedItem} (${toYearPickerState.value.realIndex0()}")
+        println("[TO] Changed to: ${toYearPickerState.value.selectedItem} (${toYearPickerState.value}")
     }
 
     AlertDialog(
         onDismissRequest = onDismiss,
         title = {
             Text(
-                "Год" + "\n [F] (${fromYearPickerState.value.prettyPrint()})"
-                        + "\n [T] (${toYearPickerState.value.prettyPrint()})",
+                "Год" + "\n [F] (${fromYearPickerState.value.prettyPrint})"
+                        + "\n [T] (${toYearPickerState.value.prettyPrint})",
                 //style = MaterialTheme.typography.headlineSmall,
                 style = MaterialTheme.typography.labelSmall,
 
@@ -237,15 +255,12 @@ private fun Body(state: MutableState<PickerState>): @Composable() (BoxScope.() -
         WheelView(
             modifier = Modifier,
             itemSize = DpSize(150.dp, 25.dp),
-            selection = 0,
+            selection = state.value.realItemPosition,
             isEndless = state.value.items.size >= 4,
             itemCount = state.value.items.size,
             rowOffset = 2,
             onFocusItem = { item ->
-                state.value = state.value.copy(_realItemPosition = item)
-                state.value.selectedItem = state.value.items[item]
-
-
+                state.value = state.value.copy(realItemPosition = item)
 //                                fromYearPickerState.value = fromYearPickerState.value.copy(_realItemPosition = it).also {
 //                                    it.realItemPosition = it._realItemPosition // вызовет сеттер и обновит selectedItem
 //                                }
@@ -289,8 +304,7 @@ private fun Body(state: MutableState<PickerState>): @Composable() (BoxScope.() -
                 .zIndex(1f)
         ) {
             Button(onClick = {
-                state.value = state.value.copy(selectedItem = "@@@@@")
-
+                state.value = state.value.copy(realItemPosition = 0)
             }) {
                 Text(text = "Button")
             }
