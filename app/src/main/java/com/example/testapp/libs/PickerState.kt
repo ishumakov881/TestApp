@@ -10,8 +10,9 @@ fun rememberPickerState(): MutableState<PickerState> = remember { mutableStateOf
 
 data class PickerState(
     val items: List<String> = emptyList(),
+    val _realItemPosition: Int = -999,
 ) {
-    var realItemPosition: Int = -999
+    var realItemPosition: Int = _realItemPosition
     var virtualItemPosition: Int = -999
 
     val selectedItem: String

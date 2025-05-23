@@ -70,11 +70,8 @@ fun YearRangePickerDialog(
 
     // Установка начальных значений пикеров
     LaunchedEffect(Unit) {
-        fromYearPickerState.value = PickerState(items = fromYearsList)
-        fromYearPickerState.value.realItemPosition = adjustedFromYearIndex
-
-        toYearPickerState.value = PickerState(items = toYearsList)
-        toYearPickerState.value.realItemPosition = adjustedToYearIndex
+        fromYearPickerState.value = PickerState(items = fromYearsList, _realItemPosition = adjustedFromYearIndex)
+        toYearPickerState.value = PickerState(items = toYearsList, _realItemPosition = adjustedToYearIndex)
     }
 
     // Отслеживаем изменения выбора в первом пикере и обновляем второй
@@ -82,8 +79,7 @@ fun YearRangePickerDialog(
         val selectedItem = fromYearPickerState.value.selectedItem
         if (selectedItem == FROM_ALL_VALUE) {
             // Все годы доступны
-            toYearPickerState.value = PickerState(items = toYearsList)
-            toYearPickerState.value.realItemPosition = 2
+            toYearPickerState.value = PickerState(items = toYearsList, _realItemPosition = 2)
             //@@@ selectedItem = toYearPickerState.value.selectedItem.takeIf { it in toYearsList } ?: toYearsList.first()
         } else {
             // Ограничиваем годы в зависимости от выбранного года
