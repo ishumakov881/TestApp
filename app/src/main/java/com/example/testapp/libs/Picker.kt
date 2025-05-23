@@ -85,23 +85,27 @@ fun Picker(
     }
 
     // Отслеживаем изменения в списке и прокрутке
-    LaunchedEffect(listState, /**/state.value.items) {
+    LaunchedEffect(listState, state.value.items) {
+        // Если изменился список элементов, сбрасываем позицию
+        if (state.value.items.isNotEmpty()) {
+            val newStartIndex = listScrollMiddle - listScrollMiddle % state.value.items.size - visibleItemsMiddle +
+                    state.value._realItemPosition.coerceIn(0, maxOf(0, state.value.items.size - 1))
+            listState.scrollToItem(newStartIndex)
+        }
+
         snapshotFlow { listState.firstVisibleItemIndex }
             .map { firstVisibleIndex ->
                 val targetIndex = firstVisibleIndex + visibleItemsMiddle
                 val item = state.value.getItem(targetIndex)
                 item to targetIndex
             }
-            .collect { (_, index) ->
+            .collect { (item, index) ->
                 // Обновляем состояние с новым выбранным элементом
                 val itemsSize = state.value.items.size
                 val realIndex = index % itemsSize
                 
-                // Обновляем оба индекса
-                state.value.virtualItemPosition = index
-                state.value.realItemPosition = realIndex
-                
-                println("{selected} Selected item at virtualPos: $index, realPos: $realIndex/$itemsSize")
+                state.value = state.value.copy(items = state.value.items, _realItemPosition = realIndex)
+                println("{selected} Selected item at virtualPos: $index, realPos: $realIndex/$itemsSize ${state.value.selectedItem}")
             }
     }
 
@@ -117,7 +121,7 @@ fun Picker(
         ) {
             items(listScrollCount) { index ->
                 Text(
-                    text = state.value.getItem(index),
+                    text = state.value.getLabel(index),
                     maxLines = 1,
                     //overflow = TextOverflow.Ellipsis,
                     //style = textStyle,

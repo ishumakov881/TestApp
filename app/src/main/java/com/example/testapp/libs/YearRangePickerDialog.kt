@@ -85,12 +85,16 @@ fun YearRangePickerDialog(
             // Ограничиваем годы в зависимости от выбранного года
             val selectedYear = selectedItem.toIntOrNull() ?: 0
             val filteredYears = availableYears.filter {
-                it.toIntOrNull()?.let { year -> year >= selectedYear } ?: false
+                it.toIntOrNull()?.let { year -> year > selectedYear } ?: false
             } + listOf(TO_ALL_VALUE)
-            toYearPickerState.value = PickerState(items = filteredYears)
-            toYearPickerState.value.realItemPosition = 2
+            toYearPickerState.value = PickerState(items = filteredYears, _realItemPosition = 2)
         }
     }
+
+
+//    LaunchedEffect(fromYearPickerState.value) {
+//        println("@@@@@@@@@@@@@@@@ ${fromYearPickerState.value}")
+//    }
 
     // Отслеживаем изменения во втором пикере для отладки
     LaunchedEffect(toYearPickerState.value.selectedItem) {

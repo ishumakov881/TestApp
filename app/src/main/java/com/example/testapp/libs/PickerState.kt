@@ -10,31 +10,39 @@ fun rememberPickerState(): MutableState<PickerState> = remember { mutableStateOf
 
 data class PickerState(
     val items: List<String> = emptyList(),
-    val _realItemPosition: Int = -999,
+    val _realItemPosition: Int = 0,
 ) {
-    var realItemPosition: Int = _realItemPosition
-    var virtualItemPosition: Int = -999
+    var virtualItemPosition: Int = 0
 
-    val selectedItem: String
-        get() = (items.getOrNull(realItemPosition) ?: "")
+    var realItemPosition: Int = _realItemPosition
+        set(value) {
+            field = if (items.isEmpty()) 0 else value % items.size
+            selectedItem = items.getOrNull(field) ?: ""
+        }
+
+    var selectedItem: String = ""
+        get() = items.getOrNull(realItemPosition) ?: ""
 
     fun prettyPrint(): String {
-        val itemsSize = items.size
-        if (itemsSize <= 0) return "Total size: ${items.size} | ${selectedItem} "
-        return "Total size: ${items.size} | $selectedItem | ${realIndex0()}"
+        return if (items.isEmpty()) {
+            "Empty list"
+        } else {
+            "Total size: ${items.size} | Selected: $selectedItem | Real: $realItemPosition"
+        }
     }
 
     fun realIndex0(): Int {
-        val itemsSize = items.size
-        if (itemsSize <= 0) {
-            return 0
-        }
-        return virtualItemPosition % itemsSize
+        return if (items.isEmpty()) 0 else virtualItemPosition % items.size
     }
 
-    // Функция для получения элемента из списка по индексу
     fun getItem(index: Int): String {
+        return if (items.isEmpty()) "" else items[index % items.size]
+    }
+
+    fun getLabel(index: Int): String {
+        if (items.isEmpty()) return ""
         val realIndex = index % items.size
-        return "${items[realIndex]} |$realIndex |$index"
+        return if (items.isEmpty()) "" else items[index % items.size]
+        //return "${items[realIndex]} | $realIndex | $index"
     }
 }
