@@ -228,9 +228,7 @@ fun YearRangePickerDialog(
                 it.toIntOrNull()?.let { year -> year >= selectedYear } ?: false
             } + listOf(TO_ALL_VALUE)
 
-            PickerState(
-                items = filteredYears,
-                realItemPosition = filteredYears.indexOf(pickerState.value.toPicker.selectedItem)
+            PickerState(items = filteredYears, realItemPosition = filteredYears.indexOf(pickerState.value.toPicker.selectedItem)
                     .coerceAtLeast(0)
             )
         }
