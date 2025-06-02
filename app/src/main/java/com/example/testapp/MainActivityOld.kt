@@ -14,7 +14,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.example.testapp.ui.theme.TestAppTheme
 import com.lds.cinema.ui.screen.filter.YearRangePickerDialog
 
-class MainActivity : ComponentActivity() {
+class MainActivityOld : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
