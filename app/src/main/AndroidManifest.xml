@@ -20,7 +20,7 @@
         android:theme="@style/Theme.TestApp"
         tools:targetApi="31">
         <activity
-            android:name="com.example.cinematheque.MainActivity"
+            android:name="com.example.cinematheque.ComponentTestActivity"
             android:exported="true"
             android:focusable="true">
             <intent-filter>

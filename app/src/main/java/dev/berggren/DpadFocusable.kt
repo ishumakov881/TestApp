@@ -5,7 +5,6 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.*
 import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.foundation.relocation.bringIntoViewRequester
-import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.*
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -29,7 +28,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
 @ExperimentalComposeUiApi
-fun Modifier.dpadFocusable(
+fun Modifier.dpadFocusable0(
     onClick: () -> Unit,
     borderWidth: Dp = 4.dp,
     unfocusedBorderColor: Color = Color(0x00f39c12),

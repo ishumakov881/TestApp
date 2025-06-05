@@ -35,6 +35,7 @@ import androidx.compose.ui.focus.onFocusChanged
 val TopBarFocusRequesters = List(size = 1) { FocusRequester() }
 
 class MainActivity : ComponentActivity() {
+    @OptIn(ExperimentalComposeUiApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -53,104 +54,31 @@ class MainActivity : ComponentActivity() {
 
                     val initialFocusRequester : List<FocusRequester> = remember { TopBarFocusRequesters }
 
-                    //AppWithDrawer()
+                    AppWithDrawer()
                     MovieGridScreenSimple(
                         initialFocusRequester = initialFocusRequester[0]
                     )
+
+//                    ColoredBox(
+//                        Modifier.dpadFocusable(
+//                            onClick = {
+//                            },
+//                            scrollPadding = Rect(
+//                                left = 16.dp,
+//                                top = elementPaddingAndHalfOfNextBox,
+//                                right = elementPaddingAndHalfOfNextBox,
+//                                bottom = elementPaddingAndHalfOfNextBox
+//                            ),
+//                            isDefault = false
+//                        ),
+//                        color = Color.Red
+//                    )
                 }
 
             }
         }
     }
 }
-
-//@OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
-//@Composable
-//fun AppWithDrawer() {
-//    val drawerState = rememberDrawerState(DrawerValue.Closed)
-//    val coroutineScope = rememberCoroutineScope()
-//
-//    // Фокус для бургера
-//    val burgerFocusRequester = remember { FocusRequester() }
-//    var isFirstItemFocused by remember { mutableStateOf(false) }
-//
-//    // Гарантированная установка фокуса после первого composition
-////    val view = LocalView.current
-////    LaunchedEffect(view) {
-////        // Ждём полной инициализации вьюшки
-////        view.post {
-////            burgerFocusRequester.requestFocus()
-////        }
-////    }
-//    LaunchedEffect(Unit) {
-//        if (!isFirstItemFocused) {
-//            burgerFocusRequester.requestFocus()
-//            isFirstItemFocused = true
-//        }
-//    }
-//    ModalNavigationDrawer(
-//        drawerState = drawerState,
-//        drawerContent = {
-//            ModalDrawerSheet {
-//                Text("Меню", modifier = Modifier.padding(16.dp))
-//                repeat(5) {
-//                    var isFocused by remember { mutableStateOf(false) }
-//                    Text(
-//                        text = "Пункт $it",
-//                        modifier = Modifier
-//                            .fillMaxWidth()
-//                            .padding(8.dp)
-//                            .onFocusChanged { isFocused = it.isFocused }
-//                            .focusable()
-//                            .background(if (isFocused) Color.LightGray else Color.Transparent)
-//                            .then(
-//                                if (isFocused) {
-//                                    Modifier.border(2.dp, Color.Red, RoundedCornerShape(4.dp))
-//                                }else {
-//                                    Modifier
-//                                }
-//                            )
-//                            .padding(8.dp)
-//                    )
-//                }
-//            }
-//        }
-//    ) {
-//        Scaffold(
-//            topBar = {
-//                TopAppBar(
-//                    title = { Text("Медиа Центр") },
-//                    navigationIcon = {
-//                        IconButton(
-//                            onClick = {
-//                                coroutineScope.launch { drawerState.open() }
-//                            },
-//                            modifier = Modifier
-//                                .focusRequester(burgerFocusRequester)
-//                                .focusable() // ← обязательно перед .focusRequester
-//                                .onFocusChanged {
-//                                    val isFocused = it.isFocused
-//                                    println("@@@: $isFocused")
-//                                    if (it.isFocused) println("Бургер в фокусе")
-//                                }
-//                                .focusProperties {
-//                                    exit = { FocusRequester.Cancel } // Не выйти в null
-//                                }
-//                        ) {
-//                            Icon(Icons.Default.Menu, contentDescription = "Меню")
-//                        }
-//                    }
-//                )
-//            }
-//        ) { padding ->
-//            MovieGrid(rows = 4, cols = 4, modifier = Modifier.padding(padding), onClick = {
-//                row, col ->
-//                println("Клик по $row x $col")
-//                burgerFocusRequester.requestFocus()
-//            })
-//        }
-//    }
-//}
 
 
 @OptIn(ExperimentalComposeUiApi::class)

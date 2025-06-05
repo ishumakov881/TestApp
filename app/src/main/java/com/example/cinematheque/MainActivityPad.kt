@@ -17,7 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import dev.berggren.ScrollableGrid
-import dev.berggren.dpadFocusable
+import dev.berggren.dpadFocusable0
 
 class MainActivityPad : ComponentActivity() {
     @ExperimentalComposeUiApi
@@ -60,7 +60,7 @@ class MainActivityPad : ComponentActivity() {
                             (boxPadding + boxSize.div(2)).toPx()
                         }
                         ColoredBox(
-                            Modifier.dpadFocusable(
+                            Modifier.dpadFocusable0(
                                 onClick = {
                                     colorClicked = color
                                 },
