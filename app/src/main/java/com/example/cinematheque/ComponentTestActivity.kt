@@ -126,13 +126,13 @@ fun TestComponentsScreen() {
 
                 ClassicCard(
                     onClick = { /* Открыть фильм */ },
-                    title = { Text("Матрица") },
+                    title = { Text("classic card -> Матрица") },
                     image = { Image(painterResource(R.drawable.test), contentDescription = null) }
                 )
 
                 CompactCard(
                     onClick = { /* Открыть сериал */ },
-                    title = { Text("Друзья") },
+                    title = { Text("compact card-> Друзья") },
                     image = { Image(painterResource(R.drawable.test), contentDescription = null) }
                 )
 
@@ -156,7 +156,7 @@ fun TestComponentsScreen() {
                 IconButton(onClick = { /* Поставить лайк */ }) {
                     Icon(Icons.Default.ThumbUp, contentDescription = "Лайк")
                 }
-FilterChip()
+
                 InputChip(
                     selected = false,
                     onClick = { /* Ввести жанр */ },
